@@ -1,3 +1,12 @@
+/*
+Module: tmod_slave.sv
+Authors:
+Stephano Cetola <cetola@pdx.edu>
+
+Description:
+The temperature monitor. Ops.
+*/
+
 module  tmod_slave #(
     parameter type DTYPE = logic [7:0]
     ) (
@@ -39,7 +48,7 @@ module  tmod_slave #(
     begin
         cur_op <= tmod.op;
         cur_opnd <= tmod.opnd;
-    end //always_ff
+    end
     
     always_ff @(posedge clk, posedge reset)
     begin
@@ -62,9 +71,11 @@ module  tmod_slave #(
         else
         begin
             State <= Next;
-            //fill the buffer on each tick cycle based of freq variable
-            //since the clk and tick are synchronous, we can pretend the clk
-            //is really the tick
+            /*
+            JOB 1
+            Fill the buffer on each tick cycle based off the freq variable.
+            (clk and tick are synchronous, so trigger on posedge clk)
+            */
             if(tick_count >= frq)
             begin
                 tick_count <= 0;
@@ -75,6 +86,7 @@ module  tmod_slave #(
                 tick_count <= tick_count + 1;
             end
             
+            //JOB 2
             //Check for high/low temp and set or clear the warning
             if(temp > hi_temp)
             begin
@@ -91,6 +103,8 @@ module  tmod_slave #(
         end
     end //always_ff
     
+    //JOB 3
+    //Iterate over the possible op codes and perform the correct operation.
     always_ff @(State)
     begin
         case(State)
@@ -106,11 +120,10 @@ module  tmod_slave #(
                     4'b0110: Next <= CMD_OUT_ADDR;
                     4'b0111: Next <= CMD_OUT_AVG;
                     4'b1xxx: Next <= CMD_NOOP;
-                endcase //READY CASE
+                endcase
             end
             CMD_RESET:
             begin
-                //clear all data in buffer
                 tmod.status <= OK;
                 tmod.valid <= 0;
                 tmod.ready <= 1;
