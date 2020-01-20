@@ -1,10 +1,9 @@
-`include "buffer.sv"
-`include "defs.sv"
-
 module  tmod_slave #(
     parameter type DTYPE = logic [7:0]
     ) (
     tmod_bus tmod,
+    input logic clk,
+    input logic reset,
     input logic tick,
     input DTYPE temp
     );
@@ -32,18 +31,18 @@ module  tmod_slave #(
     assign buff_in = temp;
     assign buff_add = cur_opnd;
     
-    buffer buff(buff_clk, tmod.reset, buff_in, buff_addr, buff_max, buff_min, buff_addr, buff_out);
+    buffer buff(buff_clk, reset, buff_in, buff_addr, buff_max, buff_min, buff_addr, buff_out);
     
     //Store the values of the op code and operand
-    always_ff @(posedge tmod.clk)
+    always_ff @(posedge clk)
     begin
         cur_op <= tmod.op;
         cur_opnd <= tmod.opnd;
     end //always_ff
     
-    always_ff @(posedge tmod.clk, posedge tmod.reset)
+    always_ff @(posedge clk, posedge reset)
     begin
-        if (tmod.reset)
+        if (reset)
         begin
             tmod.status <= OK;
             tmod.ready <= TRUE;

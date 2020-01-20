@@ -4,6 +4,8 @@ module  tmod_master #(
     parameter type DTYPE = logic [7:0]
     ) (
     tmod_bus tmod,
+    input logic clk,
+    input logic reset,
     input TMOD_OP request,
     input logic [7:0] reqData,
     output logic done
@@ -14,7 +16,7 @@ module  tmod_master #(
     TMOD_STATUS status;
     
     //probably something here every time
-    always_ff @(posedge tmod.clk)
+    always_ff @(posedge clk)
     begin
     end //always_ff
     
@@ -25,9 +27,9 @@ module  tmod_master #(
         working <= TRUE;
     end
     
-    always_ff @(posedge tmod.clk, posedge tmod.reset)
+    always_ff @(posedge clk, posedge reset)
     begin
-        if (tmod.reset)
+        if (reset)
         begin
             //reset values
             done <= FALSE;

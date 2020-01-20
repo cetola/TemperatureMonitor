@@ -12,7 +12,7 @@ lib:
 build:
 
 	@echo "Running vlog"
-	vlog buffer.sv defs.sv temp_sensor.sv tmod_bus.sv tmod_master.sv tmod_slave.sv top.sv toptb.sv
+	vlog toptb.sv
 
 run:
 

@@ -4,6 +4,7 @@
 package defs;
     
     typedef	enum {FALSE, TRUE} bool_t;
+    typedef logic [7:0] DTYPE;
     
     /* 
 
