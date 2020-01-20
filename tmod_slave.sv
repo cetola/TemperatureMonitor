@@ -1,4 +1,5 @@
 `include "buffer.sv"
+`include "defs.sv"
 
 module  tmod_slave #(
     parameter type DTYPE = logic [7:0]
@@ -9,14 +10,12 @@ module  tmod_slave #(
     );
     DTYPE dataOut;
     reg tick_reg;
-    reg [3:0] cur_op;
+    TMOD_OP cur_op;
     reg [7:0] cur_opnd, frq, tick_count, hi_temp, low_temp;
     wire [7:0] buff_clk, buff_addr, buff_in, buff_max, buff_min, buff_avg, buff_out;
     
-    enum bit [1:0] {OK = 2'b00,
-    LOW = 2'b01,
-    HIGH = 2'b10} TMOD_STATUS;
-    
+    //I think this state machine will need more states than possible TMOD_OP values,
+    //so we will test this theory in the testbench. If not we can remove this.
     enum bit [4:0] {WAIT = 5'b00000,
     CMD_RESET = 5'b10000,
     CMD_SET_FRQ = 5'b10001,
@@ -31,7 +30,6 @@ module  tmod_slave #(
     
     assign buff_clk = tick_reg;
     assign buff_in = temp;
-    assign tmod.status = TMOD_STATUS;
     assign buff_add = cur_opnd;
     
     buffer buff(buff_clk, tmod.reset, buff_in, buff_addr, buff_max, buff_min, buff_addr, buff_out);
@@ -47,24 +45,24 @@ module  tmod_slave #(
     begin
         if (tmod.reset)
         begin
-            TMOD_STATUS <= OK;
-            tmod.ready = 0;
-            tmod.valid = 0;
+            tmod.status <= OK;
+            tmod.ready <= TRUE;
+            tmod.valid <= FALSE;
             
-            cur_op <= 0;
+            cur_op <= NOOP;
             cur_opnd <= 0;
             frq <= 0;
             tick_count <=0;
-            hi_temp <=0;
+            //These defaults are so that we (hopefully) won't get warnings.
+            hi_temp <= 8'hFF;
             low_temp <=0;
-            tmod.valid <= 0;
-            tmod.ready <= 1;
+
             Next <= READY;
         end
         else
         begin
             State <= Next;
-            //fill the buffer on each clk cycle
+            //fill the buffer on each tick cycle based of freq variable
             if(tick_count >= frq)
             begin
                 tick_count <= 0;
@@ -75,18 +73,18 @@ module  tmod_slave #(
                 tick_count <= tick_count + 1;
             end
             
-            //Check for high/low temp
+            //Check for high/low temp and set or clear the warning
             if(temp > hi_temp)
             begin
-                TMOD_STATUS <= HIGH;
+                tmod.status <= HIGH;
             end
             else if(temp < low_temp)
             begin
-                TMOD_STATUS <= LOW;
+                tmod.status <= LOW;
             end
             else
             begin
-                TMOD_STATUS <= OK;
+                tmod.status <= OK;
             end
         end
     end //always_ff
@@ -111,7 +109,7 @@ module  tmod_slave #(
             CMD_RESET:
             begin
                 //clear all data in buffer
-                TMOD_STATUS <= OK;
+                tmod.status <= OK;
                 tmod.valid <= 0;
                 tmod.ready <= 1;
                 Next <= READY;

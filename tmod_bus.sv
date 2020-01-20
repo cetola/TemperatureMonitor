@@ -1,8 +1,10 @@
+`include "defs.sv"
+
 interface tmod_bus();
     parameter type DTYPE = logic [7:0];
     logic clk;
     logic reset;
-    logic [3:0] op;
+    TMOD_OP op;
     logic [7:0] opnd;
     logic [1:0] status;
     logic valid;
