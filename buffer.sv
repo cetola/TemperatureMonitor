@@ -15,8 +15,10 @@ module buffer #(
     reg [7:0] max, min, avg, curAdd;
     reg [63:0] sum;
     
-    //TODO: this may always be 0 if it does the array split first, which I think will be the case,
-    //so we will likely need to steps to get the proper value.
+    //TODO: this may always be 0 if it does the array split first, 
+    //which I think will be the case, so we will likely need two 
+    //steps to get the proper value. Also, this way of getting
+    //the average is dubious at best. Certainly not scalable.
     assign avg = sum[8:0] >> curAdd;
     assign buff_avg = avg;
     assign buff_min = min;
