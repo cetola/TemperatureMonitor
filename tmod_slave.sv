@@ -4,14 +4,15 @@ module  tmod_slave #(
     tmod_bus tmod,
     input logic clk,
     input logic reset,
-    input logic tick,
+    input logic tick, //synchronous with clk, really needed?
     input DTYPE temp
     );
     DTYPE dataOut;
     reg tick_reg;
     TMOD_OP cur_op;
     reg [7:0] cur_opnd, frq, tick_count, hi_temp, low_temp;
-    wire [7:0] buff_clk, buff_addr, buff_in, buff_max, buff_min, buff_avg, buff_out;
+    wire buff_clk;
+    wire [7:0] buff_addr, buff_in, buff_max, buff_min, buff_avg, buff_out;
     
     //I think this state machine will need more states than possible TMOD_OP values,
     //so we will test this theory in the testbench. If not we can remove this.
@@ -62,6 +63,8 @@ module  tmod_slave #(
         begin
             State <= Next;
             //fill the buffer on each tick cycle based of freq variable
+            //since the clk and tick are synchronous, we can pretend the clk
+            //is really the tick
             if(tick_count >= frq)
             begin
                 tick_count <= 0;
