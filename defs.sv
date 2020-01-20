@@ -1,10 +1,10 @@
 `ifndef DEFS_IMPORT
 `define DEFS_IMPORT
 
-    package defs;
-
+package defs;
+    
     typedef	enum {FALSE, TRUE} bool_t;
-
+    
     // Command codes:
     // 000 - reset
     // 001 - set sample frq
@@ -16,21 +16,21 @@
     // 111 - output average
     // 1xxx - noop
     typedef enum bit [3:0] {RESET = 4'b0000,
-                SET_FRQ = 4'b0001,
-                SET_HIGH_TEMP = 4'b0010,
-                SET_LOW_TEMP = 4'b0011,
-                OUT_MAX = 4'b0100,
-                OUT_MIN = 4'b0101,
-                OUT_ADDR = 4'b0110,
-                OUT_AVG = 4'b0111,
-                NOOP = 4'b1000} TMOD_STATE;
-
+    SET_FRQ = 4'b0001,
+    SET_HIGH_TEMP = 4'b0010,
+    SET_LOW_TEMP = 4'b0011,
+    OUT_MAX = 4'b0100,
+    OUT_MIN = 4'b0101,
+    OUT_ADDR = 4'b0110,
+    OUT_AVG = 4'b0111,
+    NOOP = 4'b1000} TMOD_STATE;
+    
     typedef enum bit [1:0] {OK = 2'b00,
-                  LOW = 2'b01,
-                  HIGH = 2'b10} TMOD_STATUS;
+    LOW = 2'b01,
+    HIGH = 2'b10} TMOD_STATUS;
+    
+endpackage
 
-    endpackage
-
-  import defs::*;
+import defs::*;
 
 `endif
