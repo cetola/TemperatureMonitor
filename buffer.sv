@@ -1,3 +1,10 @@
+/*
+Module: buffer.sv
+Authors:
+Stephano Cetola <cetola@pdx.edu>
+SPDX-License-Identifier: MIT
+*/
+
 module buffer #(
     parameter type DTYPE = logic [7:0],
     parameter addressWidth = 8
@@ -36,7 +43,9 @@ module buffer #(
         end
         else
         begin
-            //store data
+            //Store data
+            //TODO: Since this buffer is circular, when it circles around the value of
+            //average is no longer valid.
             data[curAdd] <= dataIn;
             curAdd <= curAdd + 1;
             
@@ -50,7 +59,6 @@ module buffer #(
                 min <= dataIn;
             end
             
-            //set sum
             sum <= sum + dataIn;
         end
     end

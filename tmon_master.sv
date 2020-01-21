@@ -1,3 +1,10 @@
+/*
+Module: tmon_master.sv
+Authors:
+Stephano Cetola <cetola@pdx.edu>
+SPDX-License-Identifier: MIT
+*/
+
 `include "defs.sv"
 
 module  tmon_master #(

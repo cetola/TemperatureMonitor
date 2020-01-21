@@ -1,3 +1,10 @@
+/*
+Module: temp_sensor.sv
+Authors:
+Stephano Cetola <cetola@pdx.edu>
+SPDX-License-Identifier: MIT
+*/
+
 `include "defs.sv"
 module temp_sensor(input logic clk, input logic reset, output logic tick, output logic[7:0] temp);
     

@@ -1,3 +1,10 @@
+/*
+Module: defs.sv
+Authors:
+Stephano Cetola <cetola@pdx.edu>
+SPDX-License-Identifier: MIT
+*/
+
 `ifndef DEFS_IMPORT
 `define DEFS_IMPORT
 

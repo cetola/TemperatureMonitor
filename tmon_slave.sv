@@ -2,9 +2,7 @@
 Module: tmon_slave.sv
 Authors:
 Stephano Cetola <cetola@pdx.edu>
-
-Description:
-The temperature monitor. Ops.
+SPDX-License-Identifier: MIT
 */
 
 module  tmon_slave #(

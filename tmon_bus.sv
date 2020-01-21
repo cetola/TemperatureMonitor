@@ -1,3 +1,10 @@
+/*
+Module: tmon_bus.sv
+Authors:
+Stephano Cetola <cetola@pdx.edu>
+SPDX-License-Identifier: MIT
+*/
+
 `include "defs.sv"
 
 interface tmon_bus();

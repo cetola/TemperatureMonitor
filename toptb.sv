@@ -1,3 +1,10 @@
+/*
+Module: toptb.sv
+Authors:
+Stephano Cetola <cetola@pdx.edu>
+SPDX-License-Identifier: MIT
+*/
+
 `timescale 1s / 1ms
 
 `include "defs.sv"
@@ -84,7 +91,7 @@ module toptb();
         input TMON_OP request,
         logic [7:0] reqData);
         log_count++;
-        if(1===1) //TODO: test something meaningful
+        if(1===0) //TODO: test something meaningful
         begin
             err_count++;
             $fdisplay(log, "ERR%d: expected this %b %b got %b %b", err_count, request, reqData, 0, 0);
