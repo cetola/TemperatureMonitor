@@ -19,4 +19,4 @@ run:
 	vsim -c -do tmon.do toptb
 
 clean:
-	rm -rf  work
+	rm -rf  work transcript tmon.log

@@ -28,7 +28,7 @@ package defs;
     OUT_MIN = 4'b0101,
     OUT_ADDR = 4'b0110,
     OUT_AVG = 4'b0111,
-    NOOP = 4'b1000} TMOB_OP;
+    NOOP = 4'b1000} TMON_OP;
     
     typedef enum bit [1:0] {OK = 2'b00,
     LOW = 2'b01,
