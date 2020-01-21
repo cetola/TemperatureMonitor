@@ -1,5 +1,5 @@
 /*
-Module: tmod_slave.sv
+Module: tmon_slave.sv
 Authors:
 Stephano Cetola <cetola@pdx.edu>
 
@@ -7,10 +7,10 @@ Description:
 The temperature monitor. Ops.
 */
 
-module  tmod_slave #(
+module  tmon_slave #(
     parameter type DTYPE = logic [7:0]
     ) (
-    tmod_bus tmod,
+    tmon_bus tmon,
     input logic clk,
     input logic reset,
     input logic tick, //synchronous with clk, really needed?
@@ -18,12 +18,12 @@ module  tmod_slave #(
     );
     DTYPE dataOut;
     reg tick_reg;
-    TMOD_OP cur_op;
+    TMON_OP cur_op;
     reg [7:0] cur_opnd, frq, tick_count, hi_temp, low_temp;
     wire buff_clk;
     wire [7:0] buff_addr, buff_in, buff_max, buff_min, buff_avg, buff_out;
     
-    //I think this state machine will need more states than possible TMOD_OP values,
+    //I think this state machine will need more states than possible TMON_OP values,
     //so we will test this theory in the testbench. If not we can remove this.
     enum bit [4:0] {WAIT = 5'b00000,
     CMD_RESET = 5'b10000,
@@ -46,17 +46,17 @@ module  tmod_slave #(
     //Store the values of the op code and operand
     always_ff @(posedge clk)
     begin
-        cur_op <= tmod.op;
-        cur_opnd <= tmod.opnd;
+        cur_op <= tmon.op;
+        cur_opnd <= tmon.opnd;
     end
     
     always_ff @(posedge clk, posedge reset)
     begin
         if (reset)
         begin
-            tmod.status <= OK;
-            tmod.ready <= TRUE;
-            tmod.valid <= FALSE;
+            tmon.status <= OK;
+            tmon.ready <= TRUE;
+            tmon.valid <= FALSE;
             
             cur_op <= NOOP;
             cur_opnd <= 0;
@@ -90,15 +90,15 @@ module  tmod_slave #(
             //Check for high/low temp and set or clear the warning
             if(temp > hi_temp)
             begin
-                tmod.status <= HIGH;
+                tmon.status <= HIGH;
             end
             else if(temp < low_temp)
             begin
-                tmod.status <= LOW;
+                tmon.status <= LOW;
             end
             else
             begin
-                tmod.status <= OK;
+                tmon.status <= OK;
             end
         end
     end //always_ff
@@ -124,24 +124,24 @@ module  tmod_slave #(
             end
             CMD_RESET:
             begin
-                tmod.status <= OK;
-                tmod.valid <= 0;
-                tmod.ready <= 1;
+                tmon.status <= OK;
+                tmon.valid <= 0;
+                tmon.ready <= 1;
                 Next <= READY;
             end
             CMD_SET_FRQ:
             begin
-                frq <= tmod.opnd;
+                frq <= tmon.opnd;
                 Next <= READY;
             end
             CMD_SET_HIGH_TEMP:
             begin
-                hi_temp <= tmod.opnd;
+                hi_temp <= tmon.opnd;
                 Next <= READY;
             end
             CMD_SET_LOW_TEMP:
             begin
-                low_temp <= tmod.opnd;
+                low_temp <= tmon.opnd;
                 Next <= READY;
             end
             CMD_OUT_MAX:

@@ -2,9 +2,9 @@
 
 `include "defs.sv"
 `include "buffer.sv"
-`include "tmod_bus.sv"
-`include "tmod_master.sv"
-`include "tmod_slave.sv"
+`include "tmon_bus.sv"
+`include "tmon_master.sv"
+`include "tmon_slave.sv"
 `include "temp_sensor.sv"
 
 module toptb();
@@ -21,24 +21,24 @@ module toptb();
     bit Clock, Reset, Done;
 
     DTYPE D;
-    TMOD_OP request;
+    TMON_OP request;
     logic [7:0] reqData;
 
     logic [7:0] temp;
     logic tick;
 
     temp_sensor sensor(Clock, Reset, tick, temp);
-    tmod_bus #(.DTYPE(DTYPE)) tbus();
-    tmod_slave #(.DTYPE(DTYPE)) slave(tbus, Clock, Reset, tick, temp);
-    tmod_master #(.DTYPE(DTYPE)) master(tbus, Clock, Reset, request, reqData, Done);
+    tmon_bus #(.DTYPE(DTYPE)) tbus();
+    tmon_slave #(.DTYPE(DTYPE)) slave(tbus, Clock, Reset, tick, temp);
+    tmon_master #(.DTYPE(DTYPE)) master(tbus, Clock, Reset, request, reqData, Done);
     
     //TODO: for now, always monitor
     bool_t DEBUG_MON = TRUE;
     
     initial
     begin
-        log = $fopen("tmod.log");
-        $display(">>>>>Begin tmod testbench");
+        log = $fopen("tmon.log");
+        $display(">>>>>Begin tmon testbench");
         `ifdef DEBUG_MON
         $fdisplay(log, "\t\trequest\treqData\tdone\tClock\tReset");
         $fmonitor(log, "\t\t%b\t%b\t%b\t%b\t%b", request, reqData, Done, Clock, Reset);
@@ -76,12 +76,12 @@ module toptb();
         
         $fclose(log);
         $display(">>>>>There were %d errors.", err_count);
-        $display(">>>>>End tmod testbench");
+        $display(">>>>>End tmon testbench");
         $stop;
     end
     
     function automatic void log_err(
-        input TMOD_OP request,
+        input TMON_OP request,
         logic [7:0] reqData);
         log_count++;
         if(1===1) //TODO: test something meaningful

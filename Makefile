@@ -16,7 +16,7 @@ build:
 
 run:
 
-	vsim -c -do tmod.do toptb
+	vsim -c -do tmon.do toptb
 
 clean:
 	rm -rf  work

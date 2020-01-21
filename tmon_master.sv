@@ -1,19 +1,19 @@
 `include "defs.sv"
 
-module  tmod_master #(
+module  tmon_master #(
     parameter type DTYPE = logic [7:0]
     ) (
-    tmod_bus tmod,
+    tmon_bus tmon,
     input logic clk,
     input logic reset,
-    input TMOD_OP request,
+    input TMON_OP request,
     input logic [7:0] reqData,
     output logic done
     );
     
     logic working;
-    TMOD_OP State, Next;
-    TMOD_STATUS status;
+    TMON_OP State, Next;
+    TMON_STATUS status;
     
     //probably something here every time
     always_ff @(posedge clk)
@@ -45,7 +45,7 @@ module  tmod_master #(
             up here. Let's assume the Next state is probably NOOP, though
             we should check that in the TB.*/
             State <= Next;
-            if(tmod.valid && tmod.ready && !working)
+            if(tmon.valid && tmon.ready && !working)
             begin
                 done <= TRUE;
                 //Not sure what the next state should be
@@ -56,10 +56,10 @@ module  tmod_master #(
     end //always_ff
     
     //We might have changed states before the monitor is ready, so we watch for
-    //both a state change or the tmod.ready line going high.
-    always_ff @(State or posedge tmod.ready)
+    //both a state change or the tmon.ready line going high.
+    always_ff @(State or posedge tmon.ready)
     begin
-        if(tmod.ready)
+        if(tmon.ready)
         begin
             case(State)
                 RESET:
@@ -69,21 +69,21 @@ module  tmod_master #(
                 NOOP:
                 begin
                     //Here we do nothing and wait for the state to change again.
-                    tmod.op <= NOOP;
+                    tmon.op <= NOOP;
                 end
                 SET_FRQ:
                 begin
                     //we assume that all ops take 1 clock cycle
                     //this is probably a horrible assumtion
                     working <= FALSE;
-                    tmod.op <= SET_FRQ;
-                    tmod.opnd <= reqData;
+                    tmon.op <= SET_FRQ;
+                    tmon.opnd <= reqData;
                 end
                 SET_HIGH_TEMP:
                 begin
                     working <= FALSE;
-                    tmod.op <= SET_HIGH_TEMP;
-                    tmod.opnd <= reqData;
+                    tmon.op <= SET_HIGH_TEMP;
+                    tmon.opnd <= reqData;
                 end
             endcase
         end

@@ -1,10 +1,10 @@
 `include "defs.sv"
 
-interface tmod_bus();
+interface tmon_bus();
     parameter type DTYPE = logic [7:0];
-    TMOD_OP op;
+    TMON_OP op;
     DTYPE opnd;
-    TMOD_STATUS status;
+    TMON_STATUS status;
     logic valid;
     logic ready;
     
