@@ -2,7 +2,7 @@
 # Authors:
 # Stephano Cetola
 
-all: lib build
+all: lib build run
 
 lib:
 

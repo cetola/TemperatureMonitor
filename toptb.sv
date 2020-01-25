@@ -79,7 +79,7 @@ module toptb();
         repeat (1) @(negedge Clock);
         request=NOOP;
         reqData='0;
-        repeat (4) @(negedge Clock); log_err(request, reqData); $fdisplay(log, "SOME ACTION");
+        repeat (4) @(negedge Clock); log_err(request, reqData); $fdisplay(log, "Send NOOP");
         
         $fclose(log);
         $display(">>>>>There were %d errors.", err_count);
