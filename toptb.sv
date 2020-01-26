@@ -13,6 +13,7 @@ SPDX-License-Identifier: MIT
 `include "tmon_master.sv"
 `include "tmon_slave.sv"
 `include "temp_sensor.sv"
+    
 
 module toptb();
     
@@ -39,17 +40,12 @@ module toptb();
     tmon_slave #(.DTYPE(DTYPE)) slave(tbus, Clock, Reset, tick, temp);
     tmon_master #(.DTYPE(DTYPE)) master(tbus, Clock, Reset, request, reqData, Done);
     
-    //TODO: for now, always monitor
-    bool_t DEBUG_MON = TRUE;
-    
     initial
     begin
         log = $fopen("tmon.log");
         $display(">>>>>Begin tmon testbench");
-        `ifdef DEBUG_MON
         $fdisplay(log, "\t\trequest\treqData\tdone\tClock\tReset");
         $fmonitor(log, "\t\t%b\t%b\t%b\t%b\t%b", request, reqData, Done, Clock, Reset);
-        `endif
     end
     
     //free running clock
@@ -68,29 +64,61 @@ module toptb();
     end
     
     //----------------------------------------------------
-    // Main Tests
-    //
-    // ===TESTS===
-    // 1. TODO: List tests here
+    // Tester  TODO: make a class
     //----------------------------------------------------
     
-    initial
-    begin
+    initial begin : tester
         repeat (IDLE_CLOCKS) @(negedge Clock);
-        request=SET_FRQ;
-        reqData=8'b00000001;
-        repeat (4) @(negedge Clock); log_err(request, reqData); $fdisplay(log, "Send SET_FRQ");
-        repeat (4) @(negedge Clock); log_err(request, reqData); $fdisplay(log, "Send SET_FRQ");
+        
+        repeat (50) begin
+            @(negedge Clock);
+            request = get_op();
+            reqData = get_data();
+            case(request)
+                NOOP: begin
+                    @(posedge Clock);
+                end
+                RESET: begin
+                    Reset = TRUE;
+                    @(negedge Clock);
+                    Reset = FALSE;
+                end
+                default: begin
+                    wait(Done);
+                end
+            endcase
+        end
+        log_err(request, reqData); $fdisplay(log, "Send SET_FRQ");
         
         $fclose(log);
         $display(">>>>>There were %d errors.", err_count);
         $display(">>>>>End tmon testbench");
+        report_cov();
         $stop;
-    end
+    end : tester
+    //----------------------------------------------------
+    // Coverage TODO: make into a class
+    //----------------------------------------------------
+
+    covergroup op_cov;
+        all_ops: coverpoint request {
+            bins set_cmds[] = {SET_FRQ, SET_HIGH_TEMP, SET_LOW_TEMP};
+            bins get_cmds[] = {OUT_MIN, OUT_MAX, OUT_ADDR, OUT_AVG};
+        }
+    endgroup
+    
+    op_cov oc;
+
+    initial begin : coverage
+        oc = new();
+        forever begin @(negedge Clock);
+            oc.sample();
+        end
+    end : coverage
     
     function automatic void log_err(
         input TMON_OP request,
-        logic [7:0] reqData);
+        input logic[7:0] reqData);
         log_count++;
         if(1===0) //TODO: test something meaningful
         begin
@@ -99,6 +127,43 @@ module toptb();
         end
         else
         $fdisplay(log, "no error, log count: %d", log_count);
+    endfunction
+
+    //----------------------------------------------------
+    // Monitor / Checker / Scoreboard  TODO: make into a classes
+    //----------------------------------------------------
+    function automatic void report_cov();
+        $display("coverage: %f", oc.get_coverage());
+    endfunction
+    
+    //----------------------------------------------------
+    // Data generation  TODO: make into a classes
+    //----------------------------------------------------
+    function TMON_OP get_op();
+        bit [3:0] op_choice;
+        op_choice = $random;
+        casez(op_choice)
+            4'b1??1 : return RESET;
+            4'b0001 : return SET_FRQ;
+            4'b0010 : return SET_HIGH_TEMP;
+            4'b0011 : return SET_LOW_TEMP;
+            4'b0100 : return OUT_MAX;
+            4'b0101 : return OUT_MIN;
+            4'b0110 : return OUT_ADDR;
+            4'b0111 : return OUT_AVG;
+            4'b1??0 : return NOOP;
+        endcase
+    endfunction
+
+    function byte get_data();
+        bit [1:0] zero_ones;
+        zero_ones = $random;
+        if(zero_ones === 2'b00)
+            return 8'h00;
+        else if (zero_ones === 2'b11)
+            return 8'hff;
+        else
+            return $random;
     endfunction
     
 endmodule

@@ -56,7 +56,6 @@ module  tmon_master #(
             if(tmon.valid && tmon.ready && !decode)
             begin
                 checkStat("valid and ready not decoding");
-                done <= TRUE;
                 //Not sure what the next state should be
                 //so wait for the request line to decide.
                 Next <= NOOP;
@@ -74,11 +73,13 @@ module  tmon_master #(
                 RESET:
                 begin
                     //do reset
+                    done <= TRUE;
                 end
                 NOOP:
                 begin
                     //Here we do nothing and wait for the state to change again.
                     tmon.op <= NOOP;
+                    done <= TRUE;
                 end
                 SET_FRQ:
                 begin
@@ -87,17 +88,24 @@ module  tmon_master #(
                     decode <= FALSE;
                     tmon.op <= SET_FRQ;
                     tmon.opnd <= reqData;
+                    done <= TRUE;
                 end
                 SET_HIGH_TEMP:
                 begin
                     decode <= FALSE;
                     tmon.op <= SET_HIGH_TEMP;
                     tmon.opnd <= reqData;
+                    done <= TRUE;
+                end
+                default:
+                begin
+                    done <= TRUE;
                 end
             endcase
         end
         else
         begin
+            done <= FALSE;
             //wait for ready state to change
         end
     end
