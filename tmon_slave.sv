@@ -18,7 +18,6 @@ module  tmon_slave #(
     reg tick_reg;
     TMON_OP cur_op;
     reg [7:0] cur_opnd, frq, tick_count, hi_temp, low_temp;
-    wire buff_clk;
     wire [7:0] buff_addr, buff_in, buff_max, buff_min, buff_avg, buff_out;
     
     //I think this state machine will need more states than possible TMON_OP values,
@@ -35,11 +34,7 @@ module  tmon_slave #(
     CMD_NOOP = 5'b11000,
     READY = 5'b11111} State, Next;
     
-    assign buff_clk = tick_reg;
-    assign buff_in = temp;
-    assign buff_add = cur_opnd;
-    
-    buffer buff(buff_clk, reset, buff_in, buff_addr, buff_max, buff_min, buff_addr, buff_out);
+    buffer buff(tick_reg, reset, temp, cur_opnd, buff_max, buff_min, buff_addr, buff_out);
     
     //Store the values of the op code and operand
     always_ff @(posedge clk)
@@ -60,6 +55,7 @@ module  tmon_slave #(
             cur_opnd <= 0;
             frq <= 0;
             tick_count <=0;
+            tick_reg <=0;
             //These defaults are so that we (hopefully) won't get warnings.
             hi_temp <= 8'hFF;
             low_temp <=0;
@@ -105,6 +101,7 @@ module  tmon_slave #(
     //Iterate over the possible op codes and perform the correct operation.
     always_ff @(State)
     begin
+        checkStat("state change");
         case(State)
             READY:
             begin
@@ -170,4 +167,7 @@ module  tmon_slave #(
             end
         endcase //STATE CASE
     end
+    function automatic void checkStat(input string msg);
+        $display($time,"ns:slave:%s\t|cur_op:%s\tcur_opnd:%b\tState:%s\tNext:%s",msg,cur_op.name,cur_opnd, State.name,Next.name);
+    endfunction
 endmodule

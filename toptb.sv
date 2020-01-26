@@ -62,9 +62,9 @@ module toptb();
     //Start reset low, then pull high.
     initial
     begin
-        Reset = FALSE;
-        repeat (IDLE_CLOCKS) @(negedge Clock);
         Reset = TRUE;
+        repeat (IDLE_CLOCKS) @(negedge Clock);
+        Reset = FALSE;
     end
     
     //----------------------------------------------------
@@ -76,10 +76,11 @@ module toptb();
     
     initial
     begin
-        repeat (1) @(negedge Clock);
-        request=NOOP;
-        reqData='0;
-        repeat (4) @(negedge Clock); log_err(request, reqData); $fdisplay(log, "Send NOOP");
+        repeat (IDLE_CLOCKS) @(negedge Clock);
+        request=SET_FRQ;
+        reqData=8'b00000001;
+        repeat (4) @(negedge Clock); log_err(request, reqData); $fdisplay(log, "Send SET_FRQ");
+        repeat (4) @(negedge Clock); log_err(request, reqData); $fdisplay(log, "Send SET_FRQ");
         
         $fclose(log);
         $display(">>>>>There were %d errors.", err_count);

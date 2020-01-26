@@ -18,7 +18,7 @@ module  tmon_master #(
     output logic done
     );
     
-    logic working;
+    logic decode;
     TMON_OP State, Next;
     TMON_STATUS status;
     
@@ -30,9 +30,9 @@ module  tmon_master #(
     //Wait for a request, then read in the opcode.
     always_ff @(request)
     begin
-        checkStat("got request!");
+        checkStat("got request");
         Next <= request;
-        working <= TRUE;
+        decode <= TRUE;
     end
     
     always_ff @(posedge clk, posedge reset)
@@ -41,7 +41,7 @@ module  tmon_master #(
         begin
             //reset values
             done <= FALSE;
-            working <= FALSE;
+            decode <= FALSE;
             /* Assuming we come out of reset and nothing has been placed on the
             opcode lines, we should just loop a noop until the driving module
             pulls the opcode lines high to some meaningful state. */
@@ -52,11 +52,10 @@ module  tmon_master #(
             /* If reset has gone low and no request (opcode) has changed, we end
             up here. Let's assume the Next state is probably NOOP, though
             we should check that in the TB.*/
-            checkStat("out of reset!");
             State <= Next;
-            if(tmon.valid && tmon.ready && !working)
+            if(tmon.valid && tmon.ready && !decode)
             begin
-                checkStat("valid and ready not working!");
+                checkStat("valid and ready not decoding");
                 done <= TRUE;
                 //Not sure what the next state should be
                 //so wait for the request line to decide.
@@ -85,13 +84,13 @@ module  tmon_master #(
                 begin
                     //we assume that all ops take 1 clock cycle
                     //this is probably a horrible assumtion
-                    working <= FALSE;
+                    decode <= FALSE;
                     tmon.op <= SET_FRQ;
                     tmon.opnd <= reqData;
                 end
                 SET_HIGH_TEMP:
                 begin
-                    working <= FALSE;
+                    decode <= FALSE;
                     tmon.op <= SET_HIGH_TEMP;
                     tmon.opnd <= reqData;
                 end
@@ -103,6 +102,6 @@ module  tmon_master #(
         end
     end
     function automatic void checkStat(input string msg);
-        $display($time,"ns : %s | request:%s State:%s Next:%s",msg,request.name,State.name,Next.name);
+        $display($time,"ns:master:%s\t|request:%s\tState:%s\tNext:%s",msg,request.name,State.name,Next.name);
     endfunction
 endmodule

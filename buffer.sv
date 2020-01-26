@@ -36,6 +36,7 @@ module buffer #(
     begin
         if (reset)
         begin
+            checkStat("in reset");
             max <= '0;
             min <= '0;
             curAdd <= '0;
@@ -48,6 +49,7 @@ module buffer #(
             //average is no longer valid.
             data[curAdd] <= dataIn;
             curAdd <= curAdd + 1;
+            checkStat("out of reset");
             
             //set min and max
             if(dataIn > max)
@@ -62,4 +64,7 @@ module buffer #(
             sum <= sum + dataIn;
         end
     end
+    function automatic void checkStat(input string msg);
+        $display($time,"ns:buffer:%s\t|max:%h\tmin:%h\tavg:%h\tcurAdd:%h",msg,max,min,avg,curAdd);
+    endfunction
 endmodule
