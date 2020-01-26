@@ -11,7 +11,7 @@ module temp_sensor(input logic clk, input logic reset, output logic tick, output
     //seems silly, but they are synchronous.
     assign tick = clk;
 
-    always @(posedge clk)
+    always @(posedge clk, posedge reset)
     begin
         if (reset)
         begin

@@ -24,7 +24,7 @@ module toptb();
     //default to 1Hz
     parameter CLOCK_CYCLE  = 2;
     parameter CLOCK_WIDTH  = CLOCK_CYCLE/2;
-    parameter IDLE_CLOCKS  = 4;
+    parameter IDLE_CLOCKS  = 10;
     
     bit Clock, Reset, Done;
 
@@ -55,7 +55,7 @@ module toptb();
         forever #CLOCK_WIDTH Clock = ~Clock;
     end
     
-    //Start reset low, then pull high.
+    //RESET starts high
     initial
     begin
         Reset = TRUE;
@@ -88,7 +88,6 @@ module toptb();
                 end
             endcase
         end
-        log_err(request, reqData); $fdisplay(log, "Send SET_FRQ");
         
         $fclose(log);
         $display(">>>>>There were %d errors.", err_count);
