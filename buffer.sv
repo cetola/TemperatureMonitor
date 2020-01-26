@@ -32,7 +32,7 @@ module buffer #(
     assign buff_max = max;
     assign buff_out = data[address];
     
-    always @(posedge clk)
+    always @(posedge clk, posedge reset)
     begin
         if (reset)
         begin
