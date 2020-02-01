@@ -12,11 +12,12 @@ lib:
 build:
 
 	@echo "Running vlog"
-	vlog toptb.sv
+	vlog +cover toptb.sv
 
 run:
 
-	vsim -c -do tmon.do toptb
+	vsim -c toptb -do "coverage save -onexit report.ucdb; run -all;exit"
+	vsim -c -cvgperinstance -viewcov report.ucdb -do "coverage report -file report.txt -byfile -detail -noannotate -option -cvg;exit"
 
 clean:
-	rm -rf  work transcript tmon.log
+	rm -rf  work transcript tmon.log report.*
