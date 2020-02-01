@@ -20,12 +20,12 @@ The get_data function does something similar, with the function returning all 1'
 
 #### Coverage
 
-The one coverage group has a coverpoint of the request line, so only op codes are covered. We split these opcodes up into 2 bins: "get commands" and "set commands".
+The one coverage group has a coverpoint of the request line, so only op codes are covered. We split these opcodes up into 2 bins: "get commands" and "set commands". We also have a coverpoint for the reqData variable, which checks three bins, "all ones", "all zeros", and "everything else".
 
 #### Monitor / Checker / Scorecard
 
-Since we only have 1 covergroup, we really only check to see if coverage is 100%. This value is only checked visually, where as in a proper checker, we would test to see if the get_coverage value was greater than a certain threshold (e.g. 95%).  
+Since we only have 1 covergroup, we really only check to see if coverage is 100%. This value is only checked visually, where as in a proper checker, we would test to see if the get_coverage value was greater than a certain threshold (e.g. 95%). We could also check to see if the bin "all zeros" for data gets tested more than a certain percent.
 
 #### Summary
 
-As you can see from the coverage report (example_report.txt), we cover 100% of the op codes. However, some codes, for example OUT_AVG, are only tested once. Other codes like SET_LOW_TEMP are tested 6 times. As shown in the log (example_log.txt) the test takes 151ns.
+As you can see from the coverage report (example_report.txt), we cover 100% of the op codes and data. However, some codes, for example OUT_AVG, are only tested once. Other codes like SET_LOW_TEMP are tested 6 times. Likewise, as expected, the "all ones" and "all zeros" data are tested 1/4 as much as the "other" data values. As shown in the log (example_log.txt) the test takes 151ns.
