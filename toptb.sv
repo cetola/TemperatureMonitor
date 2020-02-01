@@ -44,8 +44,7 @@ module toptb();
     begin
         log = $fopen("tmon.log");
         $display(">>>>>Begin tmon testbench");
-        $fdisplay(log, "\t\trequest\treqData\tdone\tClock\tReset");
-        $fmonitor(log, "\t\t%b\t%b\t%b\t%b\t%b", request, reqData, Done, Clock, Reset);
+        //$fmonitor(log, "\t\t%b\t%b\t%b\t%b\t%b", request, reqData, Done, Clock, Reset);
     end
     
     //free running clock
@@ -74,6 +73,7 @@ module toptb();
             @(negedge Clock);
             request = get_op();
             reqData = get_data();
+            $fdisplay(log, $time,"ns\top:%b\tdata:%b",request, reqData);
             case(request)
                 NOOP: begin
                     @(posedge Clock);
