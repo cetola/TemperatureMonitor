@@ -104,6 +104,12 @@ module toptb();
             bins set_cmds[] = {SET_FRQ, SET_HIGH_TEMP, SET_LOW_TEMP};
             bins get_cmds[] = {OUT_MIN, OUT_MAX, OUT_ADDR, OUT_AVG};
         }
+
+        all_data: coverpoint reqData {
+            bins zeros = {'h00};
+            bins others = {['h01:'hFE]};
+            bins ones = {'hFF};
+        }
     endgroup
     
     op_cov oc;
