@@ -4,8 +4,8 @@ Covergroup                                             Metric       Goal       B
                                                                                                          
 ----------------------------------------------------------------------------------------------------------
  TYPE /toptb/op_cov                                   100.00%        100          -    Covered              
-    covered/total bins:                                     7          7          -                      
-    missing/total bins:                                     0          7          -                      
+    covered/total bins:                                    10         10          -                      
+    missing/total bins:                                     0         10          -                      
     % Hit:                                            100.00%        100          -                      
     type_option.weight=1
     type_option.goal=100
@@ -19,9 +19,16 @@ Covergroup                                             Metric       Goal       B
         type_option.weight=1
         type_option.goal=100
         type_option.comment=
+    Coverpoint all_data                               100.00%        100          -    Covered              
+        covered/total bins:                                 3          3          -                      
+        missing/total bins:                                 0          3          -                      
+        % Hit:                                        100.00%        100          -                      
+        type_option.weight=1
+        type_option.goal=100
+        type_option.comment=
  Covergroup instance \/toptb/oc                       100.00%        100          -    Covered              
-    covered/total bins:                                     7          7          -                      
-    missing/total bins:                                     0          7          -                      
+    covered/total bins:                                    10         10          -                      
+    missing/total bins:                                     0         10          -                      
     % Hit:                                            100.00%        100          -                      
     option.name=\/toptb/oc 
     option.weight=1
@@ -50,5 +57,18 @@ Covergroup                                             Metric       Goal       B
         bin get_cmds[OUT_MIN]                               5          1          -    Covered              
         bin get_cmds[OUT_ADDR]                              3          1          -    Covered              
         bin get_cmds[OUT_AVG]                               1          1          -    Covered              
+    Coverpoint all_data                               100.00%        100          -    Covered              
+        covered/total bins:                                 3          3          -                      
+        missing/total bins:                                 0          3          -                      
+        % Hit:                                        100.00%        100          -                      
+        option.weight=1
+        option.goal=100
+        option.comment=
+        option.at_least=1
+        option.auto_bin_max=64
+        option.detect_overlap=0
+        bin zeros                                          12          1          -    Covered              
+        bin others                                         40          1          -    Covered              
+        bin ones                                           14          1          -    Covered              
 
 TOTAL COVERGROUP COVERAGE: 100.00%  COVERGROUP TYPES: 1
